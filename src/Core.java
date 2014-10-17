@@ -1,11 +1,5 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,12 +28,13 @@ public class Core {
         if (!checkFile())
             throw new Exception("File not exist/No data in file: " + this.linksFile);
         ArrayList<String> filesRecords = readFileDataToArrayListByLines(this.linksFile);
+        ThreadHandler threadHandller = new ThreadHandler();
         for (String str : filesRecords) {
             new Downloader("Thread_" + str.split(" ")[1], str.split(" ")[0], str.split(" ")[1], this.outputFolder);
 //            downloadFile(str.split(" ")[0], str.split(" ")[1]);
         }
-        while (!controlDownloading(filesRecords.size()))
-            Thread.sleep(100);
+//        while (!controlDownloading(filesRecords.size()))
+//            Thread.sleep(1000);
         System.out.println(humanReadableByteOfAllDataSize(false));
 
     }
@@ -100,5 +95,4 @@ public class Core {
             }
         return count == controlCount;
     }
-
 }
