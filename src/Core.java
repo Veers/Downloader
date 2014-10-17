@@ -33,8 +33,10 @@ public class Core {
             createNewFolder();
         if (!checkFile())
             throw new Exception("File not exist/No data in file: " + this.linksFile);
-        for (String str : readFileDataToArrayListByLines(this.linksFile))
-            downloadFile(str.split(" ")[0], str.split(" ")[1]);
+        for (String str : readFileDataToArrayListByLines(this.linksFile)){
+            new Downloader("Thread_"+str.split(" ")[1], str.split(" ")[0], str.split(" ")[1], this.outputFolder);
+//            downloadFile(str.split(" ")[0], str.split(" ")[1]);
+        }
         System.out.println(humanReadableByteOfAllDataSize(false));
 
     }
@@ -70,35 +72,6 @@ public class Core {
             e.printStackTrace();
         }
         return data;
-    }
-
-    public void downloadFile(String url, String name) {
-        URL website = null;
-        try {
-            website = new URL(url);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        ReadableByteChannel rbc = null;
-        try {
-            assert website != null;
-            rbc = Channels.newChannel(website.openStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(this.outputFolder + "/" + name);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        try {
-            assert fos != null;
-            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-            this.fileSizes.add(fos.getChannel().size());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public String humanReadableByteOfAllDataSize(boolean si) {
