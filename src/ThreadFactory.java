@@ -1,4 +1,7 @@
 public class ThreadFactory implements ThreadAbstractFactory{
+    public ThreadFactory(){
+
+    }
     @Override
     public Thread createNewThread() {
         return null;
