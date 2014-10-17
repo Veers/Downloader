@@ -12,11 +12,9 @@ public class Downloader implements Runnable {
     private String destination;
 
     public Thread t;
-    private String threadName;
     boolean suspended = false;
 
     public Downloader(String threadName, String url, String name, String destination) {
-        this.threadName = threadName;
         this.url = url;
         this.name = name;
         this.destination = destination;

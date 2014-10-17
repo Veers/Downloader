@@ -33,10 +33,13 @@ public class Core {
             createNewFolder();
         if (!checkFile())
             throw new Exception("File not exist/No data in file: " + this.linksFile);
-        for (String str : readFileDataToArrayListByLines(this.linksFile)){
-            new Downloader("Thread_"+str.split(" ")[1], str.split(" ")[0], str.split(" ")[1], this.outputFolder);
+        ArrayList<String> filesRecords = readFileDataToArrayListByLines(this.linksFile);
+        for (String str : filesRecords) {
+            new Downloader("Thread_" + str.split(" ")[1], str.split(" ")[0], str.split(" ")[1], this.outputFolder);
 //            downloadFile(str.split(" ")[0], str.split(" ")[1]);
         }
+        while (!controlDownloading(filesRecords.size()))
+            Thread.sleep(100);
         System.out.println(humanReadableByteOfAllDataSize(false));
 
     }
@@ -85,4 +88,17 @@ public class Core {
         String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
         return String.format("%.1f %sB", fullSize / Math.pow(unit, exp), pre);
     }
+
+    public boolean controlDownloading(int controlCount) {
+        int count = 0;
+        File f = new File(this.outputFolder);
+        File[] files = f.listFiles();
+
+        if (files != null)
+            for (File file : files) {
+                count++;
+            }
+        return count == controlCount;
+    }
+
 }
