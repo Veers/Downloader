@@ -18,8 +18,10 @@ public class Core {
     protected final String outputFolder;
     protected final String downloadLimit;
     protected final int countThreads;
+    protected ArrayList<Long> fileSizes;
 
     public Core(EnumMap<Flags, String> params) {
+        this.fileSizes = new ArrayList<Long>();
         this.linksFile = params.get(Flags.linksFile);
         this.outputFolder = params.get(Flags.outputFolder);
         this.downloadLimit = params.get(Flags.downloadLimit);
@@ -31,8 +33,9 @@ public class Core {
             createNewFolder();
         if (!checkFile())
             throw new Exception("File not exist/No data in file: " + this.linksFile);
-        for (String str : readFileToArrayList(this.linksFile))
+        for (String str : readFileDataToArrayListByLines(this.linksFile))
             downloadFile(str.split(" ")[0], str.split(" ")[1]);
+        System.out.println(humanReadableByteOfAllDataSize(false));
 
     }
 
@@ -42,7 +45,7 @@ public class Core {
     }
 
     public void createNewFolder() {
-        boolean mkdirs = new File(this.outputFolder).mkdirs();
+        new File(this.outputFolder).mkdirs();
     }
 
     public boolean checkFile() {
@@ -54,7 +57,7 @@ public class Core {
         return false;
     }
 
-    private ArrayList<String> readFileToArrayList(String fileName) {
+    private ArrayList<String> readFileDataToArrayListByLines(String fileName) {
         ArrayList<String> data = new ArrayList<String>();
         try {
             File file = new File(fileName);
@@ -92,8 +95,21 @@ public class Core {
         try {
             assert fos != null;
             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+            this.fileSizes.add(fos.getChannel().size());
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String humanReadableByteOfAllDataSize(boolean si) {
+        long fullSize = 0;
+        for (Long size : this.fileSizes) {
+            fullSize += size;
+        }
+        int unit = si ? 1000 : 1024;
+        if (fullSize < unit) return fullSize + " B";
+        int exp = (int) (Math.log(fullSize) / Math.log(unit));
+        String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
+        return String.format("%.1f %sB", fullSize / Math.pow(unit, exp), pre);
     }
 }
