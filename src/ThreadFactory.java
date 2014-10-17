@@ -13,4 +13,9 @@ public class ThreadFactory implements ThreadAbstractFactory{
     public void setData(String src, String dest) {
 
     }
+
+    @Override
+    public FileInfo getInfo() {
+        return null;
+    }
 }

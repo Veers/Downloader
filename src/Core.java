@@ -28,14 +28,10 @@ public class Core {
         if (!checkFile())
             throw new Exception("File not exist/No data in file: " + this.linksFile);
         ArrayList<String> filesRecords = readFileDataToArrayListByLines(this.linksFile);
-        ThreadHandler threadHandller = new ThreadHandler();
         for (String str : filesRecords) {
             new Downloader("Thread_" + str.split(" ")[1], str.split(" ")[0], str.split(" ")[1], this.outputFolder);
 //            downloadFile(str.split(" ")[0], str.split(" ")[1]);
         }
-//        while (!controlDownloading(filesRecords.size()))
-//            Thread.sleep(1000);
-        System.out.println(humanReadableByteOfAllDataSize(false));
 
     }
 
@@ -70,18 +66,6 @@ public class Core {
             e.printStackTrace();
         }
         return data;
-    }
-
-    public String humanReadableByteOfAllDataSize(boolean si) {
-        long fullSize = 0;
-        for (Long size : this.fileSizes) {
-            fullSize += size;
-        }
-        int unit = si ? 1000 : 1024;
-        if (fullSize < unit) return fullSize + " B";
-        int exp = (int) (Math.log(fullSize) / Math.log(unit));
-        String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
-        return String.format("%.1f %sB", fullSize / Math.pow(unit, exp), pre);
     }
 
     public boolean controlDownloading(int controlCount) {
