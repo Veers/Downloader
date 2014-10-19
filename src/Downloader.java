@@ -11,22 +11,10 @@ public class Downloader implements Runnable {
     private String name;
     private String destination;
 
-    public Thread t;
-    boolean suspended = false;
-
-    public Downloader(String threadName) {
-        t = new Thread(this);
-        t.setName(threadName);
-        t.start();
-    }
-
-    public Downloader(String threadName, String url, String name, String destination) {
+    public Downloader(String url, String name, String destination) {
         this.url = url;
         this.name = name;
         this.destination = destination;
-        t = new Thread(this);
-        t.setName(threadName);
-        t.start();
     }
 
     public synchronized void downloadFile() {
@@ -60,23 +48,5 @@ public class Downloader implements Runnable {
 
     public void run() {
         downloadFile();
-    }
-
-//    public void start() {
-//        System.out.println("Starting " + threadName);
-//        if (t == null) {
-//            t = new Thread(this, threadName);
-//            t.setDaemon(true);
-//            t.start();
-//        }
-//    }
-
-    void suspend() {
-        suspended = true;
-    }
-
-    synchronized void resume() {
-        suspended = false;
-        notify();
     }
 }
