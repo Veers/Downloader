@@ -17,18 +17,24 @@ public class ThreadFactory implements ThreadAbstractFactory {
 
     @Override
     public Thread searchFreeThread() {
-        if (downloadGroup == null)
-            throw new NullPointerException("Null thread group");
-        int nAlloc = downloadGroup.activeCount();
-        int cnt = 0;
-        Thread[] threads;
-        do {
-            nAlloc *= 2;
-            threads = new Thread[nAlloc];
-            cnt = downloadGroup.enumerate(threads);
-        } while (cnt == nAlloc);
-        Thread[] arrThreads = java.util.Arrays.copyOf(threads, cnt);
+        final Thread[] arrThreads = getAllThreadFromGroup(downloadGroup);
+
+        for (Thread thread : arrThreads)
+            if (thread.getState() == Thread.State.WAITING)
+                return thread;
         return null;
+    }
+
+    @Override
+    public Thread[] searchFreeThreads() {
+        final Thread[] arrThreads = getAllThreadFromGroup(downloadGroup);
+
+        final Thread[] found = new Thread[arrThreads.length];
+        int nFound = 0;
+        for (Thread thread : arrThreads)
+            if (thread.getState() == Thread.State.WAITING)
+                found[nFound++] = thread;
+        return java.util.Arrays.copyOf(found, nFound);
     }
 
     @Override
@@ -39,5 +45,19 @@ public class ThreadFactory implements ThreadAbstractFactory {
     @Override
     public FileInfo getInfo() {
         return null;
+    }
+
+    public Thread[] getAllThreadFromGroup(ThreadGroup threadGroup) throws NullPointerException {
+        if (threadGroup == null)
+            throw new NullPointerException("Null thread group");
+        int nAlloc = threadGroup.activeCount();
+        int cnt = 0;
+        Thread[] threads;
+        do {
+            nAlloc *= 2;
+            threads = new Thread[nAlloc];
+            cnt = threadGroup.enumerate(threads);
+        } while (cnt == nAlloc);
+        return java.util.Arrays.copyOf(threads, cnt);
     }
 }

@@ -29,8 +29,7 @@ public class Core {
             throw new Exception("File not exist/No data in file: " + this.linksFile);
         ArrayList<String> filesRecords = readFileDataToArrayListByLines(this.linksFile);
         for (String str : filesRecords) {
-            new Downloader("Thread_" + str.split(" ")[1], str.split(" ")[0], str.split(" ")[1], this.outputFolder);
-//            downloadFile(str.split(" ")[0], str.split(" ")[1]);
+            //TODO
         }
 
     }
